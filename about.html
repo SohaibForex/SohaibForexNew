@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Sohaib Forex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--dark:#0d0d0d;--d2:#111;--d3:#1a1a1a;--d4:#222;--gold:#D4AF37;--gold-l:#F0C060;--white:#fff;--gray:#888;--light:#ccc}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}a{text-decoration:none;color:inherit}
+.navbar{position:fixed;top:0;width:100%;z-index:1000;background:rgba(0,0,0,.92);border-bottom:1px solid rgba(212,175,55,.2);backdrop-filter:blur(10px)}
+.navbar.scrolled{background:#000;border-bottom-color:var(--gold)}
+.nav-inner{max-width:1200px;margin:auto;padding:0 24px;height:70px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:900;letter-spacing:2px}.logo span{color:var(--gold)}
+.nav-links{list-style:none;display:flex;gap:8px;align-items:center}
+.nav-links a{padding:8px 16px;border-radius:4px;font-size:.9rem;font-weight:600;transition:.3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--gold);transition:.3s}
+.nav-links a:hover,.nav-links a.active{color:var(--gold)}.nav-links a:hover::after,.nav-links a.active::after{width:60%}
+.nav-cta{padding:8px 20px!important;background:var(--gold)!important;color:#000!important;border-radius:6px!important;font-weight:700!important}
+.nav-cta:hover{background:var(--gold-l)!important}.nav-cta::after{display:none!important}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:24px;height:2px;background:var(--gold);transition:.3s;display:block}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.page-hero{padding:140px 24px 80px;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%),var(--dark);text-align:center;border-bottom:1px solid rgba(212,175,55,.1)}
+.page-hero .tag{display:inline-block;color:var(--gold);font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.page-hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:900;margin-bottom:16px}.page-hero h1 span{color:var(--gold)}
+.page-hero p{color:var(--light);font-size:1.05rem;max-width:600px;margin:0 auto;line-height:1.7}
+.section{padding:90px 24px}
+.section-inner{max-width:1200px;margin:auto}
+.sec-tag{display:inline-block;color:var(--gold);font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.sec-title{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,2.5vw,2rem);font-weight:900;margin-bottom:16px}.sec-title span{color:var(--gold)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.sec-text{color:var(--light);line-height:1.8;margin-bottom:16px}
+.check-list{list-style:none;margin-top:16px}
+.check-list li{display:flex;align-items:center;gap:12px;color:var(--light);margin-bottom:10px;font-size:.95rem}
+.check-list li i{color:var(--gold);font-size:.8rem}
+.story-visual{background:var(--d2);border:1px solid rgba(212,175,55,.2);border-radius:16px;padding:36px;position:relative}
+.story-visual::before{content:'';position:absolute;top:-1px;left:40px;right:40px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.metric{background:var(--d3);border-radius:12px;padding:20px;text-align:center;border:1px solid rgba(212,175,55,.1)}
+.metric-num{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:var(--gold)}
+.metric-lbl{font-size:.8rem;color:var(--gray);margin-top:4px}
+.values-sec{background:var(--d3)}
+.values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:52px}
+.val-card{background:var(--d2);border:1px solid rgba(212,175,55,.15);border-radius:14px;padding:30px 24px;transition:.3s;text-align:center}
+.val-card:hover{border-color:rgba(212,175,55,.5);transform:translateY(-4px);box-shadow:0 12px 40px rgba(212,175,55,.1)}
+.val-icon{width:64px;height:64px;background:rgba(212,175,55,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--gold);margin:0 auto 20px}
+.val-title{font-size:1rem;font-weight:700;margin-bottom:10px}
+.val-text{color:var(--gray);font-size:.88rem;line-height:1.6}
+.timeline-sec{background:var(--dark)}
+.timeline{margin-top:52px;position:relative}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);transform:translateX(-50%)}
+.tl-item{display:flex;gap:40px;margin-bottom:48px;position:relative}
+.tl-item:nth-child(even){flex-direction:row-reverse}
+.tl-content{flex:1;background:var(--d2);border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:28px}
+.tl-item:nth-child(odd) .tl-content{margin-right:calc(50% + 20px)}
+.tl-item:nth-child(even) .tl-content{margin-left:calc(50% + 20px)}
+.tl-year{font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--gold);font-weight:700;margin-bottom:8px}
+.tl-title{font-size:1rem;font-weight:700;margin-bottom:8px}
+.tl-text{color:var(--gray);font-size:.88rem;line-height:1.6}
+.tl-dot{position:absolute;left:50%;top:28px;width:14px;height:14px;background:var(--gold);border-radius:50%;transform:translateX(-50%);z-index:1;box-shadow:0 0 0 4px rgba(212,175,55,.2)}
+.cta-section{background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.03));border-top:1px solid rgba(212,175,55,.15)}
+.cta-inner{max-width:1200px;margin:auto;padding:80px 24px;text-align:center}
+.btn-gold{padding:14px 32px;background:linear-gradient(135deg,var(--gold),var(--gold-l));color:#000;font-weight:700;border-radius:8px;font-size:.95rem;transition:.3s;display:inline-flex;align-items:center;gap:8px}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,.4)}
+.btn-outline{padding:14px 32px;border:2px solid var(--gold);color:var(--gold);font-weight:700;border-radius:8px;font-size:.95rem;transition:.3s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline:hover{background:rgba(212,175,55,.1);transform:translateY(-2px)}
+footer{background:#000;border-top:1px solid rgba(212,175,55,.2);padding:60px 24px 24px}
+.footer-inner{max-width:1200px;margin:auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{color:var(--gray);font-size:.88rem;line-height:1.7;margin:16px 0 20px}
+.social-links{display:flex;gap:12px}
+.social-links a{width:38px;height:38px;background:var(--d3);border:1px solid rgba(212,175,55,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gray);transition:.3s}
+.social-links a:hover{background:var(--gold);color:#000}
+.footer-col h4{color:var(--white);font-size:.95rem;font-weight:700;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid rgba(212,175,55,.2)}
+.footer-col ul{list-style:none}.footer-col ul li{margin-bottom:10px}
+.footer-col ul li a{color:var(--gray);font-size:.88rem;transition:.3s}.footer-col ul li a:hover{color:var(--gold)}
+.footer-contact-item{display:flex;gap:10px;align-items:center;margin-bottom:12px;color:var(--gray);font-size:.88rem}
+.footer-contact-item i{color:var(--gold);width:16px}
+.footer-bottom{border-top:1px solid rgba(212,175,55,.1);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-bottom p{color:var(--gray);font-size:.8rem}
+.footer-disclaimer{color:rgba(136,136,136,.6);font-size:.75rem;text-align:center;margin-top:8px}
+@media(max-width:768px){
+  .hamburger{display:flex}
+  .nav-links{position:fixed;top:70px;left:0;right:0;background:#000;flex-direction:column;padding:24px;gap:4px;transform:translateY(-110%);transition:.3s;border-bottom:1px solid rgba(212,175,55,.2)}
+  .nav-links.open{transform:translateY(0)}.nav-links a{padding:14px 16px;border-radius:8px;display:block}
+  .two-col{grid-template-columns:1fr}.story-visual{display:none}
+  .timeline::before{left:20px}.tl-item,.tl-item:nth-child(even){flex-direction:column}
+  .tl-item:nth-child(odd) .tl-content,.tl-item:nth-child(even) .tl-content{margin:0 0 0 48px}
+  .tl-dot{left:20px}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">SOHAIB<span>FOREX</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html" class="active">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="ea-products.html">EA Products</a></li>
+      <li><a href="ealiveperformance.html">Live Performance</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="https://wa.me/923024685228" target="_blank" class="nav-cta"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="page-hero">
+  <span class="tag">Our Story</span>
+  <h1>About <span>Sohaib Forex</span></h1>
+  <p>Empowering traders worldwide with professional-grade automated trading solutions and expert forex advisory services.</p>
+</div>
+<section class="section">
+  <div class="section-inner">
+    <div class="two-col">
+      <div>
+        <span class="sec-tag">Who We Are</span>
+        <h2 class="sec-title">Your Trusted <span>Forex Partner</span></h2>
+        <p class="sec-text">Sohaib Forex is a professional forex trading solutions provider specializing in automated Expert Advisors (EAs), trading signals, and comprehensive trader education.</p>
+        <p class="sec-text">Founded by an experienced forex trader, we've developed a suite of battle-tested trading robots that consistently deliver results across various market conditions.</p>
+        <ul class="check-list">
+          <li><i class="fas fa-check-circle"></i> 5+ years of live trading experience</li>
+          <li><i class="fas fa-check-circle"></i> 500+ satisfied traders worldwide</li>
+          <li><i class="fas fa-check-circle"></i> Multiple award-winning EA strategies</li>
+          <li><i class="fas fa-check-circle"></i> 24/7 dedicated WhatsApp support</li>
+          <li><i class="fas fa-check-circle"></i> Transparent performance records</li>
+        </ul>
+      </div>
+      <div class="story-visual">
+        <div class="metric-row">
+          <div class="metric"><div class="metric-num">500+</div><div class="metric-lbl">Traders Served</div></div>
+          <div class="metric"><div class="metric-num">98%</div><div class="metric-lbl">Win Rate</div></div>
+          <div class="metric"><div class="metric-num">5+</div><div class="metric-lbl">Years Active</div></div>
+          <div class="metric"><div class="metric-num">24/7</div><div class="metric-lbl">Live Support</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section values-sec">
+  <div class="section-inner">
+    <div style="text-align:center">
+      <span class="sec-tag">Our Values</span>
+      <h2 class="sec-title">Built on <span>Trust & Results</span></h2>
+    </div>
+    <div class="values-grid">
+      <div class="val-card"><div class="val-icon"><i class="fas fa-handshake"></i></div><div class="val-title">Integrity</div><div class="val-text">We maintain complete transparency in our trading results, never overpromising or hiding losses.</div></div>
+      <div class="val-card"><div class="val-icon"><i class="fas fa-trophy"></i></div><div class="val-title">Excellence</div><div class="val-text">Every EA we develop undergoes rigorous backtesting and live optimization before release.</div></div>
+      <div class="val-card"><div class="val-icon"><i class="fas fa-users"></i></div><div class="val-title">Community</div><div class="val-text">We build lasting relationships with our clients, treating every trader's success as our own.</div></div>
+      <div class="val-card"><div class="val-icon"><i class="fas fa-lightbulb"></i></div><div class="val-title">Innovation</div><div class="val-text">Continuously evolving our strategies and technology to stay ahead of market changes.</div></div>
+    </div>
+  </div>
+</section>
+<section class="section timeline-sec">
+  <div class="section-inner">
+    <div style="text-align:center">
+      <span class="sec-tag">Our Journey</span>
+      <h2 class="sec-title">Growth <span>Timeline</span></h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">2019</div><div class="tl-title">The Beginning</div><div class="tl-text">Started as a personal trading project, developing the first automated strategies for forex markets.</div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">2020</div><div class="tl-title">First EA Launch</div><div class="tl-text">Released our first commercial Expert Advisor, garnering 50+ satisfied clients in the first month.</div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">2022</div><div class="tl-title">500 Traders Milestone</div><div class="tl-text">Crossed 500 active traders, expanding our EA product line to cover gold, indices, and major pairs.</div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">2024+</div><div class="tl-title">Continued Growth</div><div class="tl-text">Expanding our product suite with AI-enhanced strategies and comprehensive trader training programs.</div></div></div>
+    </div>
+  </div>
+</section>
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="sec-tag">Start Today</span>
+    <h2 class="sec-title" style="margin-bottom:16px">Join the <span>Sohaib Forex</span> Family</h2>
+    <p style="color:var(--light);margin-bottom:36px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7">Ready to automate your trading? Contact us today for a free consultation.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/923024685228?text=Hi%2C%20I%20want%20to%20know%20more%20about%20Sohaib%20Forex." target="_blank" class="btn-gold"><i class="fab fa-whatsapp"></i> Contact on WhatsApp</a>
+      <a href="ea-products.html" class="btn-outline"><i class="fas fa-robot"></i> View EA Products</a>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" style="font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;display:block;margin-bottom:0;color:#fff;text-decoration:none">SOHAIB<span style="color:var(--gold)">FOREX</span></a><p>Professional forex trading solutions for serious traders worldwide.</p><div class="social-links"><a href="https://wa.me/923024685228" target="_blank"><i class="fab fa-whatsapp"></i></a><a href="tel:+923024685228"><i class="fas fa-phone"></i></a></div></div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="ea-products.html">EA Products</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Services</h4><ul><li><a href="services.html">EA Robots</a></li><li><a href="services.html">Forex Signals</a></li><li><a href="services.html">Copy Trading</a></li><li><a href="services.html">VPS Setup</a></li><li><a href="services.html">Training</a></li></ul></div>
+      <div class="footer-col"><h4>Contact</h4><div class="footer-contact-item"><i class="fab fa-whatsapp"></i><a href="https://wa.me/923024685228" target="_blank" style="color:var(--gray)">+92 302 4685228</a></div><div class="footer-contact-item"><i class="fas fa-clock"></i><span>24/7 Support</span></div></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 Sohaib Forex. All rights reserved.</p></div>
+    <p class="footer-disclaimer">⚠ Trading forex involves significant risk. Past performance is not indicative of future results.</p>
+  </div>
+</footer>
+<script>
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>50));
+const ham=document.getElementById('hamburger'),nav=document.getElementById('navLinks');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');nav.classList.toggle('open')});
+</script>
+</body>
+</html>
