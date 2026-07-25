@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SohaibForex Indicator – 20/50 MA Signal Engine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:        #060910;
+  --panel:     #0c1018;
+  --border:    #161d2a;
+  --border2:   #1e2b3d;
+  --green:     #00e5a0;
+  --green-dim: #00e5a020;
+  --red:       #ff3d6b;
+  --red-dim:   #ff3d6b20;
+  --blue:      #3d8bff;
+  --blue-dim:  #3d8bff18;
+  --gold:      #ffc23d;
+  --gold-dim:  #ffc23d18;
+  --text:      #dce8f0;
+  --muted:     #4a6070;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Space Grotesk', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+header {
+  background: linear-gradient(90deg, #060910 0%, #0a1220 50%, #060910 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 28px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text { font-size: 1rem; font-weight: 700; letter-spacing: 0.5px; }
+.logo-text span { color: var(--green); }
+.header-badge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+/* ─── LAYOUT ─── */
+.app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.field select, .field input {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.field select:focus, .field input:focus {
+  border-color: var(--green);
+}
+
+.rr-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.rr-btn {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  border-radius: 7px;
+  padding: 9px 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+.rr-btn.active {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.gen-btn {
+  background: linear-gradient(135deg, var(--green) 0%, #00b87a 100%);
+  color: #000;
+  border: none;
+  border-radius: 9px;
+  padding: 13px;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-top: 4px;
+}
+.gen-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.gen-btn:active { transform: translateY(0); }
+
+/* Rules box */
+.rules-box {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 12px;
+}
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: #8aa0b4;
+  line-height: 1.4;
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* ─── MAIN AREA ─── */
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Signal Banner */
+.signal-banner {
+  padding: 0 24px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  transition: background 0.4s;
+}
+.signal-banner.buy-mode  { background: #050f0a; border-bottom-color: var(--green); }
+.signal-banner.sell-mode { background: #0f0508; border-bottom-color: var(--red); }
+.signal-banner.wait-mode { background: #0f0e05; border-bottom-color: var(--gold); }
+
+.signal-pill {
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 2px solid;
+  flex-shrink: 0;
+}
+.buy-mode  .signal-pill { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+.sell-mode .signal-pill { color: var(--red);   border-color: var(--red);   background: var(--red-dim); }
+.wait-mode .signal-pill { color: var(--gold);  border-color: var(--gold);  background: var(--gold-dim); }
+
+.signal-info { flex: 1; }
+.signal-pair { font-size: 1.4rem; font-weight: 700; font-family: var(--mono); }
+.signal-desc { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+.signal-conds {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.cond-pip {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cond-pip.pass { background: var(--green); }
+.cond-pip.fail { background: #2a3a40; }
+
+/* Level Cards */
+.level-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.level-card {
+  background: var(--panel);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.level-card-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.level-card-val {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.entry-color { color: var(--blue); }
+.sl-color    { color: var(--red); }
+.tp1-color   { color: var(--gold); }
+.tp2-color   { color: var(--green); }
+
+/* Chart */
+.chart-area {
+  flex: 1;
+  padding: 16px 20px;
+  overflow: hidden;
+  position: relative;
+}
+.chart-wrap { position: relative; width: 100%; height: 100%; }
+
+/* Condition Detail */
+.cond-strip {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+.cond-block {
+  flex: 1;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+}
+.cond-block:last-child { border-right: none; }
+.cond-icon { font-size: 0.9rem; flex-shrink: 0; }
+.cond-text { color: var(--muted); line-height: 1.3; }
+.cond-text strong { display: block; font-size: 0.7rem; margin-bottom: 1px; }
+.cond-block.pass .cond-text strong { color: var(--green); }
+.cond-block.fail .cond-text strong { color: var(--red); }
+.cond-block.pass .cond-text { color: #6a8a7a; }
+.cond-block.fail .cond-text { color: #8a6a6a; }
+
+/* Default state */
+.default-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--muted);
+}
+.default-state .big-icon { font-size: 3rem; }
+.default-state p { font-size: 0.85rem; }
+
+/* RR Info */
+.rr-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+.rr-chip {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  background: var(--bg);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .main { height: auto; }
+  .level-bar { grid-template-columns: repeat(2, 1fr); }
+  .cond-strip { flex-wrap: wrap; }
+  .cond-block { flex: 0 0 50%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📈</div>
+    <div class="logo-text"><span>Sohaib</span>Forex</div>
+  </div>
+  <div class="header-badge">20 MA / 50 MA INDICATOR v2.0</div>
+</header>
+
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar">
+
+    <div class="section-label">Instrument</div>
+    <div class="field">
+      <label>Trading Pair</label>
+      <select id="pair">
+        <option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option>
+        <option>XAUUSD – Gold</option><option>AUDUSD</option><option>USDCAD</option>
+        <option>GBPJPY</option><option>NZDUSD</option><option>USDCHF</option><option>EURJPY</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Timeframe</label>
+      <select id="tf">
+        <option>M5</option><option>M15</option><option>M30</option>
+        <option selected>H1</option><option>H4</option><option>D1</option>
+      </select>
+    </div>
+
+    <div class="section-label">Live MA Values</div>
+    <div class="field">
+      <label>Current Price</label>
+      <input type="number" id="price" value="1.08450" step="0.00001">
+    </div>
+    <div class="field">
+      <label>20 MA (Current)</label>
+      <input type="number" id="ma20" value="1.08200" step="0.00001">
+    </div>
+    <div class="field">
+      <label>50 MA (Current)</label>
+      <input type="number" id="ma50" value="1.07900" step="0.00001">
+    </div>
+    <div class="field">
+      <label>20 MA (Previous candle)</label>
+      <input type="number" id="pma20" value="1.08100" step="0.00001">
+    </div>
+    <div class="field">
+      <label>50 MA (Previous candle)</label>
+      <input type="number" id="pma50" value="1.07820" step="0.00001">
+    </div>
+
+    <div class="section-label">Risk : Reward</div>
+    <div class="rr-toggle">
+      <button class="rr-btn active" data-rr="1" onclick="selectRR(this)">1 : 1</button>
+      <button class="rr-btn" data-rr="2" onclick="selectRR(this)">1 : 2</button>
+      <button class="rr-btn" data-rr="both" onclick="selectRR(this)">BOTH</button>
+    </div>
+
+    <button class="gen-btn" onclick="generateSignal()">⚡ GENERATE SIGNAL</button>
+
+    <div class="section-label" style="margin-top:4px">Strategy Rules</div>
+    <div class="rules-box">
+      <div class="rule-item"><div class="rule-dot"></div>20 MA is above 50 MA</div>
+      <div class="rule-item"><div class="rule-dot"></div>Both MAs are rising</div>
+      <div class="rule-item"><div class="rule-dot"></div>MA gap is growing</div>
+      <div class="rule-item"><div class="rule-dot"></div>Price is above 20 MA</div>
+      <div class="rule-item"><div class="rule-dot"></div>Entry on bullish crossover</div>
+      <div class="rule-item"><div class="rule-dot"></div>Stop Loss below 50 MA</div>
+      <div class="rule-item"><div class="rule-dot"></div>Exit below 50 MA or bearish cross</div>
+    </div>
+
+    <div style="font-size:0.65rem; color:var(--muted); text-align:center; padding-top:4px;">
+      © SohaibForex · www.sohaibforex.com<br>Educational Use Only
+    </div>
+
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main" id="main-area">
+
+    <!-- Signal Banner -->
+    <div class="signal-banner" id="sig-banner">
+      <div class="signal-pill" id="sig-pill">READY</div>
+      <div class="signal-info">
+        <div class="signal-pair" id="sig-pair">—</div>
+        <div class="signal-desc" id="sig-desc">Enter values and click Generate Signal</div>
+      </div>
+      <div class="rr-info" id="rr-display"></div>
+    </div>
+
+    <!-- Level Cards -->
+    <div class="level-bar" id="level-bar">
+      <div class="level-card">
+        <div class="level-card-label">Entry Price</div>
+        <div class="level-card-val entry-color" id="lv-entry">—</div>
+      </div>
+      <div class="level-card">
+        <div class="level-card-label">Stop Loss</div>
+        <div class="level-card-val sl-color" id="lv-sl">—</div>
+      </div>
+      <div class="level-card">
+        <div class="level-card-label">Take Profit 1 : 1</div>
+        <div class="level-card-val tp1-color" id="lv-tp1">—</div>
+      </div>
+      <div class="level-card">
+        <div class="level-card-label">Take Profit 1 : 2</div>
+        <div class="level-card-val tp2-color" id="lv-tp2">—</div>
+      </div>
+    </div>
+
+    <!-- Chart Area -->
+    <div class="chart-area">
+      <div class="chart-wrap">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Condition Strip -->
+    <div class="cond-strip" id="cond-strip">
+      <div class="cond-block" id="cb1">
+        <span class="cond-icon">—</span>
+        <div class="cond-text"><strong>Checking…</strong>20 MA vs 50 MA</div>
+      </div>
+      <div class="cond-block" id="cb2">
+        <span class="cond-icon">—</span>
+        <div class="cond-text"><strong>Checking…</strong>20 MA Rising</div>
+      </div>
+      <div class="cond-block" id="cb3">
+        <span class="cond-icon">—</span>
+        <div class="cond-text"><strong>Checking…</strong>50 MA Rising</div>
+      </div>
+      <div class="cond-block" id="cb4">
+        <span class="cond-icon">—</span>
+        <div class="cond-text"><strong>Checking…</strong>MA Gap Growing</div>
+      </div>
+      <div class="cond-block" id="cb5">
+        <span class="cond-icon">—</span>
+        <div class="cond-text"><strong>Checking…</strong>Price > 20 MA</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let chartInst = null;
+let activeRR   = 'both';
+
+function selectRR(btn) {
+  document.querySelectorAll('.rr-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeRR = btn.dataset.rr;
+}
+
+function fmt(v, pair) {
+  if (pair.includes('JPY') || pair.includes('Gold')) return v.toFixed(3);
+  return v.toFixed(5);
+}
+
+function setCond(id, pass, title, sub) {
+  const el = document.getElementById(id);
+  el.className = 'cond-block ' + (pass ? 'pass' : 'fail');
+  el.innerHTML = `<span class="cond-icon">${pass ? '✅' : '❌'}</span>
+    <div class="cond-text"><strong>${title}</strong>${sub}</div>`;
+}
+
+function generateSignal() {
+  const pair  = document.getElementById('pair').value;
+  const tf    = document.getElementById('tf').value;
+  const price = parseFloat(document.getElementById('price').value);
+  const ma20  = parseFloat(document.getElementById('ma20').value);
+  const ma50  = parseFloat(document.getElementById('ma50').value);
+  const pma20 = parseFloat(document.getElementById('pma20').value);
+  const pma50 = parseFloat(document.getElementById('pma50').value);
+
+  const c1 = ma20 > ma50;
+  const c2 = ma20 > pma20;
+  const c3 = ma50 > pma50;
+  const c4 = (ma20 - ma50) > (pma20 - pma50);
+  const c5 = price > ma20;
+  const passed = [c1,c2,c3,c4,c5].filter(Boolean).length;
+
+  setCond('cb1', c1, c1 ? '20 MA ABOVE 50 MA ✓' : '20 MA Below 50 MA ✗', `20MA: ${fmt(ma20,pair)} | 50MA: ${fmt(ma50,pair)}`);
+  setCond('cb2', c2, c2 ? '20 MA RISING ✓' : '20 MA Falling ✗', `${fmt(pma20,pair)} → ${fmt(ma20,pair)}`);
+  setCond('cb3', c3, c3 ? '50 MA RISING ✓' : '50 MA Falling ✗', `${fmt(pma50,pair)} → ${fmt(ma50,pair)}`);
+  setCond('cb4', c4, c4 ? 'GAP GROWING ✓' : 'Gap Shrinking ✗', `Gap: ${fmt(ma20-ma50,pair)}`);
+  setCond('cb5', c5, c5 ? 'PRICE ABOVE 20 MA ✓' : 'Price Below 20 MA ✗', `Price: ${fmt(price,pair)}`);
+
+  const banner = document.getElementById('sig-banner');
+  const pill   = document.getElementById('sig-pill');
+  const sigPair= document.getElementById('sig-pair');
+  const sigDesc= document.getElementById('sig-desc');
+  const rrDisp = document.getElementById('rr-display');
+
+  banner.className = 'signal-banner';
+
+  const sl   = ma50 - Math.abs(ma50 * 0.0004);
+  const risk = Math.abs(price - sl);
+  const tp1  = price + risk;
+  const tp2  = price + risk * 2;
+
+  const show1 = activeRR === '1' || activeRR === 'both';
+  const show2 = activeRR === '2' || activeRR === 'both';
+
+  document.getElementById('lv-entry').textContent = passed === 5 ? fmt(price, pair) : '—';
+  document.getElementById('lv-sl').textContent    = passed === 5 ? fmt(sl, pair)    : '—';
+  document.getElementById('lv-tp1').textContent   = (passed === 5 && show1) ? fmt(tp1, pair) : '—';
+  document.getElementById('lv-tp2').textContent   = (passed === 5 && show2) ? fmt(tp2, pair) : '—';
+
+  sigPair.textContent = `${pair}  ·  ${tf}`;
+
+  if (passed === 5) {
+    banner.classList.add('buy-mode');
+    pill.textContent = '⬆ BUY';
+    sigDesc.textContent = `Strong Uptrend Confirmed — All 5/5 conditions pass. Enter above bullish crossover.`;
+    rrDisp.innerHTML = `
+      ${show1 ? `<div class="rr-chip">TP1 (1:1) → ${fmt(tp1,pair)}</div>` : ''}
+      ${show2 ? `<div class="rr-chip">TP2 (1:2) → ${fmt(tp2,pair)}</div>` : ''}
+      <div class="rr-chip" style="color:var(--red)">SL → ${fmt(sl,pair)}</div>
+    `;
+    drawChart(price, ma20, ma50, sl, tp1, tp2, pair, 'buy', show1, show2);
+  } else if (passed >= 3) {
+    banner.classList.add('wait-mode');
+    pill.textContent = '⏳ WAIT';
+    sigDesc.textContent = `${passed}/5 conditions met — Trend forming. Wait for full confirmation before entry.`;
+    rrDisp.innerHTML = `<div class="rr-chip">${passed}/5 rules passed</div>`;
+    drawChart(price, ma20, ma50, sl, tp1, tp2, pair, 'wait', false, false);
+    document.getElementById('lv-entry').textContent = '—';
+    document.getElementById('lv-sl').textContent = '—';
+    document.getElementById('lv-tp1').textContent = '—';
+    document.getElementById('lv-tp2').textContent = '—';
+  } else {
+    banner.classList.add('sell-mode');
+    pill.textContent = '🚫 NO SIGNAL';
+    sigDesc.textContent = `Only ${passed}/5 conditions met — No valid uptrend. Stay out of this trade.`;
+    rrDisp.innerHTML = `<div class="rr-chip">${passed}/5 rules passed</div>`;
+    drawChart(price, ma20, ma50, sl, tp1, tp2, pair, 'none', false, false);
+    document.getElementById('lv-entry').textContent = '—';
+    document.getElementById('lv-sl').textContent = '—';
+    document.getElementById('lv-tp1').textContent = '—';
+    document.getElementById('lv-tp2').textContent = '—';
+  }
+}
+
+function drawChart(price, ma20, ma50, sl, tp1, tp2, pair, mode, showTP1, showTP2) {
+  if (chartInst) { chartInst.destroy(); }
+
+  const n = 22;
+  const labels = [];
+  const pArr=[], m20=[], m50=[];
+  const base20 = ma20 * 0.991;
+  const base50 = ma50 * 0.988;
+  const basePr = base50 * 0.998;
+
+  for (let i = 0; i < n; i++) {
+    labels.push(`C${i+1}`);
+    const f = i / (n-1);
+    m20.push(parseFloat((base20 + (ma20-base20)*f).toFixed(5)));
+    m50.push(parseFloat((base50 + (ma50-base50)*f*0.85).toFixed(5)));
+    pArr.push(parseFloat((basePr  + (price - basePr) * Math.pow(f,1.4)).toFixed(5)));
+  }
+  labels[n-1] = '▶ NOW';
+
+  const green='#00e5a0', red='#ff3d6b', blue='#3d8bff', gold='#ffc23d', muted='#1e2b3d';
+
+  const datasets = [
+    {
+      label:'Price',
+      data: pArr,
+      borderColor: mode==='buy' ? green : mode==='none' ? red : gold,
+      borderWidth: 2,
+      pointRadius: pArr.map((_,i)=>i===n-1?7:2),
+      pointBackgroundColor: pArr.map((_,i)=>i===n-1?(mode==='buy'?green:red):muted),
+      tension: 0.4,
+      fill: false,
+      order: 1,
+    },
+    {
+      label:'20 MA',
+      data: m20,
+      borderColor: '#7b61ff',
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.5,
+      fill: false,
+      order: 2,
+      borderDash: [],
+    },
+    {
+      label:'50 MA',
+      data: m50,
+      borderColor: blue,
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.5,
+      fill: false,
+      order: 3,
+    },
+  ];
+
+  if (mode === 'buy') {
+    datasets.push({
+      label:'Stop Loss',
+      data: new Array(n).fill(sl),
+      borderColor: red,
+      borderWidth: 1.5,
+      borderDash: [6,4],
+      pointRadius: 0,
+      fill: false,
+      order: 4,
+    });
+    if (showTP1) datasets.push({
+      label:'TP 1:1',
+      data: new Array(n).fill(tp1),
+      borderColor: gold,
+      borderWidth: 1.5,
+      borderDash: [6,4],
+      pointRadius: 0,
+      fill: false,
+      order: 5,
+    });
+    if (showTP2) datasets.push({
+      label:'TP 1:2',
+      data: new Array(n).fill(tp2),
+      borderColor: green,
+      borderWidth: 1.5,
+      borderDash: [6,4],
+      pointRadius: 0,
+      fill: false,
+      order: 6,
+    });
+  }
+
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#4a6070',
+            font: { family: "'JetBrains Mono'", size: 10 },
+            boxWidth: 20,
+            padding: 16,
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0c1018',
+          borderColor: '#1e2b3d',
+          borderWidth: 1,
+          titleColor: '#dce8f0',
+          bodyColor: '#4a6070',
+          titleFont: { family: "'JetBrains Mono'", size: 11 },
+          bodyFont: { family: "'JetBrains Mono'", size: 10 },
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y, pair)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#2a3a4a', font: { family: "'JetBrains Mono'", size: 9 } },
+          grid:  { color: '#0f1620' },
+        },
+        y: {
+          ticks: {
+            color: '#2a3a4a',
+            font: { family: "'JetBrains Mono'", size: 9 },
+            callback: v => fmt(v, pair),
+          },
+          grid: { color: '#0f1620' },
+        }
+      }
+    }
+  });
+}
+
+generateSignal();
+</script>
+</body>
+</html>
